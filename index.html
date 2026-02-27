@@ -3,132 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Étude - منصة التعلم</title>
+    <title>Étude - تطبيق الدراسة</title>
+    
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+    
     <style>
-        :root { --main-purple: #673ab7; --accent-orange: #ffa000; --success-green: #4caf50; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f6; margin: 0; display: flex; flex-direction: column; align-items: center; }
-        
-        /* Header Section */
-        header { background: var(--main-purple); color: white; width: 100%; padding: 25px 0; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        
-        .container { width: 90%; max-width: 500px; margin-top: 20px; }
-        
-        /* Status Card */
-        .status-card { background: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        
-        /* Lesson Cards */
-        .lesson-card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 8px 15px rgba(0,0,0,0.1); margin-bottom: 20px; border-right: 5px solid var(--main-purple); display: none; }
-        .lesson-content { padding: 20px; }
-        .lesson-price { font-weight: bold; color: var(--success-green); font-size: 1.2em; }
-        
-        /* Buttons */
-        .btn { border: none; padding: 15px 25px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; margin-top: 10px; }
-        .btn-login { background: var(--accent-orange); color: white; }
-        .btn-pay { background: var(--success-green); color: white; }
-        .btn:disabled { background: #ccc; cursor: not-allowed; }
-
-        #log-area { font-size: 12px; color: #666; margin-top: 10px; background: #eee; padding: 5px; border-radius: 5px; display: none; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 90%;
+        }
+        h1 { color: #673ab7; } /* لون Pi المميز */
+        .status {
+            margin: 20px 0;
+            padding: 10px;
+            border-radius: 5px;
+            background: #eee;
+            font-size: 0.9rem;
+        }
+        button {
+            background-color: #673ab7;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+        button:hover { background-color: #512da8; }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>📚 تطبيق Étude</h1>
-    <p>تعلم واربح باستخدام Pi</p>
-</header>
-
-<div class="container">
-    <div class="status-card" id="login-section">
-        <h3 id="welcome-msg">مرحباً بك في مستقبل التعلم</h3>
-        <p>سجل دخولك لبدء استكشاف الدروس</p>
-        <button class="btn btn-login" id="loginBtn">دخول عبر Pi Network</button>
-    </div>
-
-    <div class="lesson-card" id="lesson1">
-        <div class="lesson-content">
-            <h3>🎓 الدرس الأول: مدخل إلى Blockchain</h3>
-            <p>تعلم كيف تعمل تقنية البلوكشين في 10 دقائق.</p>
-            <p class="lesson-price">السعر: 0.1 π</p>
-            <button class="btn btn-pay" onclick="requestPayment(0.1, 'الدرس الأول')">شراء الدرس الآن</button>
-            <div id="log-area"></div>
+    <div class="container">
+        <h1>Étude App</h1>
+        <p>مرحباً بك في تطبيق الدراسة الخاص بك على Pi Network.</p>
+        
+        <div id="status-box" class="status">
+            جاري تهيئة نظام Pi...
         </div>
+
+        <button onclick="login()">تسجيل الدخول عبر Pi</button>
     </div>
-</div>
 
-<script>
-    const Pi = window.Pi;
-    // تهيئة التطبيق في وضع التجربة
-    Pi.init({ version: "2.0", sandbox: true });
-
-    const loginBtn = document.getElementById('loginBtn');
-    const loginSection = document.getElementById('login-section');
-    const lessonCard = document.getElementById('lesson1');
-    const welcomeMsg = document.getElementById('welcome-msg');
-    const logArea = document.getElementById('log-area');
-
-    // وظيفة تسجيل الدخول
-    loginBtn.onclick = async () => {
-        loginBtn.disabled = true;
-        loginBtn.innerText = "جاري التحقق...";
-        
+    <script>
+        // 1. تهيئة تطبيق Pi
+        const Pi = window.Pi;
         try {
-            const auth = await Pi.authenticate(['username', 'payments'], (p) => {
-                console.log("Payment in progress...", p);
-            });
-            
-            // نجاح الدخول
-            welcomeMsg.innerText = "أهلاً بك، " + auth.user.username;
-            welcomeMsg.style.color = "#4caf50";
-            loginBtn.style.display = "none";
-            loginSection.querySelector('p').innerText = "تم تسجيل دخولك بنجاح ✅";
-            
-            // إظهار الدروس
-            lessonCard.style.display = "block";
-            
+            Pi.init({ version: "2.0", sandbox: true });
+            document.getElementById('status-box').innerText = "تم الاتصال بنظام Pi بنجاح ✅";
         } catch (err) {
-            alert("فشل تسجيل الدخول: " + err.message);
-            loginBtn.disabled = false;
-            loginBtn.innerText = "حاول مرة أخرى";
+            document.getElementById('status-box').innerText = "خطأ في تهيئة Pi SDK";
+            console.error(err);
         }
-    };
 
-    // وظيفة طلب الدفع
-    async function requestPayment(amt, lessonName) {
-        logArea.style.display = "block";
-        logArea.innerText = "جاري فتح المحفظة...";
-        
-        try {
-            const payment = await Pi.createPayment({
-                amount: amt,
-                memo: "شراء " + lessonName,
-                metadata: { lessonId: "L1" },
-            }, {
-                onReadyForServerApproval: (paymentId) => {
-                    logArea.innerText = "✅ بانتظار تأكيد الشبكة... المعرف: " + paymentId;
-                    // ملاحظة: في Sandbox قد تنتهي العملية هنا وهذا طبيعي حالياً
-                },
-                onReadyForServerCompletion: (paymentId, txid) => {
-                    logArea.innerText = "🎊 اكتملت العملية بنجاح! رقم المعاملة: " + txid;
-                    alert("تم فتح الدرس! استمتع بالتعلم.");
-                },
-                onCancel: (paymentId) => {
-                    logArea.innerText = "❌ تم إلغاء العملية من قبل المستخدم.";
-                },
-                onError: (error, payment) => {
-                    console.error(error);
-                    if(error.message.includes("expired")) {
-                        logArea.innerText = "💡 تذكير: الربط سليم، ولكن الدفع الحقيقي يحتاج لخادم (Server).";
-                    } else {
-                        logArea.innerText = "⚠️ خطأ: " + error.message;
-                    }
-                },
-            });
-        } catch (e) {
-            alert("خطأ تقني: " + e.message);
+        // 2. دالة تسجيل الدخول
+        async function login() {
+            try {
+                const scopes = ['username', 'payments'];
+                const onIncompletePaymentFound = (payment) => { /* معالجة المدفوعات المعلقة هنا */ };
+
+                const auth = await Pi.authenticate(scopes, onIncompletePaymentFound);
+                document.getElementById('status-box').innerText = "مرحباً: " + auth.user.username;
+                alert("تم تسجيل دخولك بنجاح يا " + auth.user.username);
+            } catch (err) {
+                console.error(err);
+                alert("فشل تسجيل الدخول. تأكد من فتح التطبيق داخل Pi Browser.");
+            }
         }
-    }
-</script>
-
+    </script>
 </body>
 </html>
