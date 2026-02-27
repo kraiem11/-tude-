@@ -3,39 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Étude - Pi App</title>
+    <title>Étude App</title>
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
     <style>
-        body { font-family: sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 85%; text-align: center; }
-        h1 { color: #673ab7; margin-bottom: 10px; }
-        .btn { background: #ffa000; color: white; border: none; padding: 15px 30px; border-radius: 30px; font-size: 18px; font-weight: bold; width: 100%; cursor: pointer; }
-        #status { margin-top: 20px; padding: 10px; border-radius: 10px; font-size: 14px; }
+        body { font-family: sans-serif; background: #673ab7; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; color: white; }
+        .box { background: white; color: #333; padding: 30px; border-radius: 20px; text-align: center; width: 80%; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .btn { background: #ffa000; color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; font-size: 18px; font-weight: bold; margin-top: 20px; }
     </style>
 </head>
 <body>
+    <div class="box">
+        <h1>📚 Étude</h1>
+        <p id="msg">جاري تجهيز بيئة التعلم...</p>
+        <button class="btn" onclick="login()">دخول سريع</button>
+    </div>
 
-<div class="card">
-    <h1>📚 Étude</h1>
-    <p>منصة التعلم المصغر</p>
-    <button class="btn" onclick="login()">دخول عبر Pi</button>
-    <div id="status">جاري الاتصال...</div>
-</div>
+    <script>
+        // تهيئة فورية
+        const Pi = window.Pi;
+        Pi.init({ version: "2.0", sandbox: true });
 
-<script>
-    const Pi = window.Pi;
-    Pi.init({ version: "2.0", sandbox: true });
-
-    async function login() {
-        try {
-            const auth = await Pi.authenticate(['username', 'payments'], (p) => {});
-            document.getElementById('status').innerHTML = "✅ أهلاً بك " + auth.user.username;
-            document.getElementById('status').style.color = "green";
-        } catch (e) {
-            alert("خطأ: " + e.message);
+        async function login() {
+            try {
+                const auth = await Pi.authenticate(['username'], (p) => {});
+                document.getElementById('msg').innerText = "أهلاً بك يا " + auth.user.username;
+                alert("تم تسجيل الدخول بنجاح!");
+            } catch (e) {
+                alert("تنبيه: " + e.message);
+            }
         }
-    }
-</script>
-
+    </script>
 </body>
 </html>
