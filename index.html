@@ -1,28 +1,17 @@
-<script src="https://sdk.minepi.com/pi-sdk.js"></script>
+<head>
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+</head>
 
-<script>
-    // تهيئة تطبيق Pi
-    const Pi = window.Pi;
-    Pi.init({ version: "2.0", sandbox: true }); // اجعل sandbox: false عند الإطلاق الرسمي
-
-    async function connectPi() {
-        try {
-            // طلب تسجيل الدخول ومشاركة اسم المستخدم
-            const scopes = ['username', 'payments'];
-            
-            function onIncompletePaymentFound(payment) {
-                console.log("هناك دفع غير مكتمل:", payment);
-            };
-
-            const auth = await Pi.authenticate(scopes, onIncompletePaymentFound);
-            
-            // تغيير واجهة التطبيق لتظهر اسم المستخدم
-            document.querySelector('.balance-box').innerHTML = "أهلاً، " + auth.user.username;
-            alert("تم الاتصال بنجاح يا " + auth.user.username);
-            
-        } catch (err) {
-            console.error(err);
-            alert("فشل الاتصال: تأكد من فتح التطبيق داخل Pi Browser");
+<body>
+    ...
+    
+    <script>
+        window.onload = function() {
+            if (window.Pi) {
+                window.Pi.init({ version: "2.0", sandbox: true });
+            } else {
+                console.error("مكتبة Pi لم تُحمل بعد");
+            }
         }
-    }
-</script>
+    </script>
+</body>
