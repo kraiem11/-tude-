@@ -3,107 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Étude - Pi Network</title>
-    <script src="https://sdk.minepi.com/pi-sdk.js" defer></script>
+    <title>Étude - Pi App</title>
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
     <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #f8f9fa;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-        header {
-            background-color: #673ab7;
-            color: white;
-            width: 100%;
-            padding: 30px 0;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        .container { padding: 20px; width: 90%; max-width: 400px; }
-        .status {
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 12px;
-            font-weight: bold;
-            background: #eee;
-        }
-        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .btn-login {
-            background-color: #ffa000;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 30px;
-            font-size: 18px;
-            font-weight: bold;
-            width: 100%;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .card {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
+        body { font-family: sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 85%; text-align: center; }
+        h1 { color: #673ab7; margin-bottom: 10px; }
+        .btn { background: #ffa000; color: white; border: none; padding: 15px 30px; border-radius: 30px; font-size: 18px; font-weight: bold; width: 100%; cursor: pointer; }
+        #status { margin-top: 20px; padding: 10px; border-radius: 10px; font-size: 14px; }
     </style>
 </head>
 <body>
 
-<header>
+<div class="card">
     <h1>📚 Étude</h1>
     <p>منصة التعلم المصغر</p>
-</header>
-
-<div class="container">
-    <div id="status-box" class="status">جاري التحقق من مكتبة Pi...</div>
-    
-    <button id="login-btn" class="btn-login" onclick="login()">تسجيل الدخول عبر Pi</button>
-
-    <div class="card">
-        <h3>مرحباً بك</h3>
-        <p>بمجرد تسجيل الدخول، ستتمكن من البدء في كسب ومشاركة المعرفة.</p>
-    </div>
+    <button class="btn" onclick="login()">دخول عبر Pi</button>
+    <div id="status">جاري الاتصال...</div>
 </div>
 
 <script>
-    // تهيئة التطبيق
-    window.onload = function() {
-        if (window.Pi) {
-            try {
-                window.Pi.init({ version: "2.0", sandbox: true });
-                document.getElementById('status-box').innerText = "✅ مكتبة Pi جاهزة";
-                document.getElementById('status-box').className = "status success";
-            } catch (e) {
-                console.error(e);
-            }
-        } else {
-            document.getElementById('status-box').innerText = "❌ افتح التطبيق داخل Pi Browser";
-        }
-    };
+    const Pi = window.Pi;
+    Pi.init({ version: "2.0", sandbox: true });
 
     async function login() {
-        const btn = document.getElementById('login-btn');
-        btn.innerText = "جاري الاتصال...";
-        
         try {
-            const auth = await window.Pi.authenticate(['username', 'payments'], (payment) => {
-                console.log("Payment in progress...", payment);
-            });
-            
-            document.getElementById('status-box').innerHTML = "✅ أهلاً بك، " + auth.user.username;
-            btn.innerText = "تم تسجيل الدخول";
-            btn.style.backgroundColor = "#4caf50";
-            alert("تم الاتصال بنجاح يا " + auth.user.username);
-            
-        } catch (err) {
-            alert("تنبيه: " + err.message);
-            btn.innerText = "تسجيل الدخول عبر Pi";
+            const auth = await Pi.authenticate(['username', 'payments'], (p) => {});
+            document.getElementById('status').innerHTML = "✅ أهلاً بك " + auth.user.username;
+            document.getElementById('status').style.color = "green";
+        } catch (e) {
+            alert("خطأ: " + e.message);
         }
     }
 </script>
